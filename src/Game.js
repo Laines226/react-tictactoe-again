@@ -63,7 +63,7 @@ class Game extends React.Component {
           <Board squares={this.state.squares} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
-          <div>{this.state.isNextX? 'X' : 'O' }</div>
+          <div>{/* status */}</div>
           <ol>{/* TODO */}</ol>
         </div>
       </div>
