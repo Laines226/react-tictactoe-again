@@ -78,7 +78,8 @@ class Game extends React.Component {
     }
     else{
       let nextPlayer = this.state.isNextX ? 'X': 'O';
-      status = "Next Player: " + nextPlayer;
+      status = "Next Player: " + nextPl
+      ayer;
     }
     let historyList =  history.map((element, index) => {
       return <li key={index}><a href="#" onClick={() => {this.jumpTo(index)}}> history #{index}</a></li>;
