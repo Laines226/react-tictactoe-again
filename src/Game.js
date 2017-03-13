@@ -13,7 +13,6 @@ class Board extends React.Component {
     return <Square content={this.props.squares[i]} onClick={() => this.props.onClick(i)} />;
   }
   render() {
-    const status = 'Next player: X';
     return (
       <div>
         <div className="status">{status}</div>
@@ -41,30 +40,57 @@ class Game extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      squares: Array(9).fill(null),
-      isNextX: true
+      //currentSquares: Array(9).fill(null),
+      stepNumber: 0,
+      history: [Array(9).fill(null)],
+      isNextX: true,
     };
 
     this.handleClick = this.handleClick.bind(this);
+    this.jumpTo = this.jumpTo.bind(this);
   }
   handleClick(i) {
-    let isNextX = this.state.isNextX;
-    const squares = this.state.squares.slice();
-    if (calculateWinner(squares) === null) {
+    let stepNumber = this.state.stepNumber;
+    let history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const squares = history[history.length - 1].slice();
+    let isNextX =  this.state.isNextX;
+    if (calculateWinner(squares) === null && squares[i] === null) {
+      history.push(squares);
+      stepNumber++;
       squares[i] = isNextX ? 'X' : 'O';
       isNextX = !isNextX;
-      this.setState({ squares: squares, isNextX: isNextX });
+      this.setState({history : history, stepNumber: stepNumber, isNextX: isNextX });
     }
   }
+  jumpTo(step){
+    console.log("handleHistoryClick [event.target]", step);
+    let isNextX = step === 0 || (step%2) === 0;
+    this.setState({stepNumber: step, isNextX: isNextX})
+  }
   render() {
+    let history = this.state.history;
+    const currentSquares = history[this.state.stepNumber];
+    console.log("render [currentSquares],[stepNumber]", currentSquares, this.state.stepNumber);
+    let winner = calculateWinner(currentSquares.slice());
+    let status;
+    if(winner){
+      status = "Player " + winner + " wins!";
+    }
+    else{
+      let nextPlayer = this.state.isNextX ? 'X': 'O';
+      status = "Next Player: " + nextPlayer;
+    }
+    let historyList =  history.map((element, index) => {
+      return <li key={index}><a href="#" onClick={() => {this.jumpTo(index)}}> history #{index}</a></li>;
+    });
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={this.state.squares} onClick={(i) => this.handleClick(i)} />
+          <Board squares={currentSquares} onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <div>{status}</div>
+          <ol>{historyList}</ol>
         </div>
       </div>
     );
